@@ -10,16 +10,18 @@ import {
 
 class CompositeComponent {
   currentElement: ReactElement
-  renderedComponent: InternalComponent | null
-  publicInstance: ReactComponent | null
+  renderedComponent?: InternalComponent
+  publicInstance?: ReactComponent
   
   constructor(element: ReactElement) {
     this.currentElement = element
-    this.renderedComponent = null
-    this.publicInstance = null
   }
 
-  mount(): HTMLElement | null {
+  getPublicInstance(): ReactComponent | undefined {
+    return this.publicInstance
+  }
+
+  mount(): HTMLElement {
     const element = this.currentElement
     const type = element.type
     const props = element.props

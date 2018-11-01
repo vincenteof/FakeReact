@@ -1,20 +1,19 @@
 import { CompositeComponent } from './CompositeComponent'
 import { DOMComponent } from './DOMComponent'
 
-
 abstract class ReactComponent {
-  props: object | null = null
+  props?: object
   abstract render(): ReactElement
   componentWillMount() {}
 }
 
-type FuncComponent = (props: object) => ReactElement
-type ClassComponent = new(props: object) => ReactComponent
+type FuncComponent = (props?: object) => ReactElement
+type ClassComponent = new(props?: object) => ReactComponent
 
 type ReactElementType = string | FuncComponent | ClassComponent
 
 // instance of `ReactElement` is something like `{type: 'div', props: {}}`
-type ReactElement = { type: ReactElementType, props: object }
+type ReactElement = { type: ReactElementType, props?: any }
 
 type InternalComponent = CompositeComponent | DOMComponent
 
@@ -27,6 +26,13 @@ function instantiateComponent(element: ReactElement) {
   }
 }
 
+function mountTree(element: ReactElement, containerNode: HTMLElement): ReactComponent | HTMLElement | undefined {
+  const rootComponent = instantiateComponent(element)
+  const node = rootComponent.mount()
+  containerNode.appendChild(node)
+  return rootComponent.getPublicInstance()
+}
+
 export {
   FuncComponent,
   ReactElementType,
@@ -34,5 +40,6 @@ export {
   ReactElement,
   ClassComponent,
   instantiateComponent,
-  InternalComponent
+  InternalComponent,
+  mountTree
 }
