@@ -1,9 +1,20 @@
 /**
- * @param {(string | Function)} type - type of the element, a real dom node type of a vdom definition
+ * @param {string | Function} type - type of the element, a real dom node type of a vdom definition
  * @param {Object} props - needed properties
- * @param {(Object | Object[])} children - children of the element
+ * @param {Object | Object[]} children - children of the element
  */
-function createElement(type, props, children) {
+function createElement(type, props, ...children) {
+    props.children = children
+    return {
+        type,
+        props
+    }
+}
+
+class Component {
+    isFreactComponent() {
+        return {}
+    }
 }
 
 export {
