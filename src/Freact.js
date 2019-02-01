@@ -4,7 +4,13 @@
  * @param {Object | Object[]} children - children of the element
  */
 function createElement(type, props, ...children) {
-    props.children = children
+    let childrenForProps = children
+    if (children.length === 0) {
+        childrenForProps = null
+    } else if (children.length === 1) {
+        childrenForProps = children[0]
+    }
+    props.children = childrenForProps
     return {
         type,
         props

@@ -1,10 +1,10 @@
 {
   "name": "fakereact",
   "version": "1.0.0",
-  "description": "Building React from scratch using typescript",
+  "description": "Building React from scratch using javascript",
   "main": "index.js",
   "scripts": {
-    "test": "tsc -w & live-server"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/vincenteof/FakeReact/issues"
   },
-  "homepage": "https://github.com/vincenteof/FakeReact#readme"
+  "homepage": "https://github.com/vincenteof/FakeReact#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "jest": "^24.0.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5"
+  }
 }
