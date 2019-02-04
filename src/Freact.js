@@ -24,5 +24,6 @@ class Component {
 }
 
 export {
-    createElement
+    createElement,
+    Component
 }

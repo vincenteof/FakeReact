@@ -3,11 +3,12 @@ import commonjs from 'rollup-plugin-commonjs'
 import babel from 'rollup-plugin-babel'
 
 export default {
-    input: 'src/FreactDOM.js',
+    input: 'src/index.js',
     output: {
       file: 'dist/freact.js',
       format: 'umd',
-      name: 'FreactDOM'
+      name: 'Freact',
+      sourcemap: true
     },
     plugins: [
       resolve(),
