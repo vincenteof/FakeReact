@@ -6,7 +6,7 @@
 function createElement(type, props, ...children) {
     let childrenForProps = children
     if (children.length === 0) {
-        childrenForProps = null
+        childrenForProps = []
     } else if (children.length === 1) {
         childrenForProps = children[0]
     }

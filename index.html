@@ -6,10 +6,17 @@
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <script src="./dist/freact.min.js"></script>
+    <script src="./dist/freact.js"></script>
     <script>
+      function sayHi() {
+        console.log('Hi!!!')
+      }
       window.onload = function () {
-        console.log(FreactDOM)
+        const root = document.getElementById('root')
+        const e = Freact.createElement
+        const myButton = e('button', { onclick: "sayHi()" }, 'say', 'hi')
+        const button = e('div', {}, myButton, myButton, myButton)
+        Freact.render(button, root)
       }
     </script>
     <title>React App</title>

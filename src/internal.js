@@ -19,7 +19,7 @@ class CompositeComponent {
      * @returns {Node} - the real dom node which is already mounted
      */
     mount() {
-        const element = this.element
+        const element = this.currentElement
         const { type, props } = element
         let instance = null
         let renderedElement
@@ -56,7 +56,7 @@ class DOMComponent {
      * @returns {Node} - the real dom node which is already mounted
      */
     mount() {
-        const element = this.element
+        const element = this.currentElement
         const { type, props } = element
         
         const node = document.createElement(type)
@@ -67,7 +67,7 @@ class DOMComponent {
             children = [children]
         }
 
-        Object.keys.forEach((k) => {
+        Object.keys(props).forEach((k) => {
             if (k !== 'children') {
                 node.setAttribute(k, props[k])
             }
@@ -83,11 +83,35 @@ class DOMComponent {
     }
 }
 
+// special kind of dom node
+class TextComponent {
+    constructor(text) {
+        this.text = text
+        this.node = null
+    }
+
+    getPublicInstance() {
+        return this.node
+    }
+
+    mount() {
+        const text = this.text
+        const node = document.createElement('span')
+        this.node = node
+        node.innerText = text
+        return node
+    }
+}
+
 /**
- * @param {Object} element - react element
+ * @param {Object} element - react element or some text
  * @returns {CompositeComponent | DOMComponent} - an internal instance of the react element 
  */
 function instantiate(element) {
+    if (typeof element === 'string') {
+        return new TextComponent(element)
+    }
+
     const { type } = element
     let renderedComponent
     if (typeof type === 'function') {
