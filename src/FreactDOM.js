@@ -9,10 +9,10 @@ function render(element, container) {
     if (container.firstChild) {
         const prevNode = container.firstChild
         const prevRootComponent = prevNode._internalInstance
-        const prevElement = prevNode.currentElement
+        const prevElement = prevRootComponent.currentElement
 
         if (prevElement.type === element.type) {
-            prevRootComponent.recieve(element)
+            prevRootComponent.receive(element)
             return
         } 
         unmountComponentAtNode(container)

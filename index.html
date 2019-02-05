@@ -25,10 +25,14 @@
       window.onload = function () {
         console.log(Freact)
         const root = document.getElementById('root')
-        // const myButton = e('button', { onclick: "sayHi()" }, 'say', 'hi')
         const myButton = e(Button, { onClick: sayHi }, 'sayHi')
         const unmountButton = e(Button, { onClick: function () { Freact.unmountComponentAtNode(root) } }, 'unmount')
-        const button = e('div', {}, myButton, unmountButton)
+        function rerender() {
+          // Freact.render(e('div', {}, myButton, unmountButton), root)
+          Freact.render(e('div', {}, myButton, unmountButton, myButton), root)  
+        }
+        const rerenderButton = e(Button, { onClick: rerender }, 'rerender')
+        const button = e('div', {}, myButton, unmountButton, rerenderButton)
         Freact.render(button, root)
       }
     </script>

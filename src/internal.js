@@ -217,7 +217,9 @@ class DOMComponent {
                 continue
             }
             // replace node of different types
-            const canUpdate = prevChildren[i].type === nextChildren[i].type
+            const canUpdate = (isText(prevChildren[i]) && isText(nextChildren[i])) 
+                || (prevChildren[i].type === nextChildren[i].type)
+
             if (!canUpdate) {
                 const prevNode = prevChild.getHostNode()
                 prevChild.unmount()
@@ -234,7 +236,7 @@ class DOMComponent {
 
         // unmount node not exists
         for (let j = nextChildren.length; j < prevChildren.length; j++) {
-            const prevChild = prevChildren[i]
+            const prevChild = prevRenderedChildren[j]
             const node = prevChild.getHostNode()
             prevChild.unmount()
             operationQueue.push({ type: 'REMOVE', node })
@@ -252,7 +254,7 @@ class DOMComponent {
                 case 'REPLACE':
                     this.node.replaceChild(operation.nextNode, operation.prevNode)
                     break
-                case 'DELETE':
+                case 'REMOVE':
                     this.node.removeChild(operation.node)
                     break
                 default: 
@@ -265,6 +267,10 @@ class DOMComponent {
     getHostNode() {
         return this.node
     }  
+}
+
+function isText(child) {
+    return typeof(child) == "undefined"
 }
 
 // special kind of dom node
@@ -292,7 +298,7 @@ class TextComponent {
     }
 
     receive(nextElement) {
-
+        this.node.innerText = nextElement
     }
 
     getHostNode() {
