@@ -27,7 +27,8 @@
         const root = document.getElementById('root')
         // const myButton = e('button', { onclick: "sayHi()" }, 'say', 'hi')
         const myButton = e(Button, { onClick: sayHi }, 'sayHi')
-        const button = e('div', {}, myButton, myButton, myButton)
+        const unmountButton = e(Button, { onClick: function () { Freact.unmountComponentAtNode(root) } }, 'unmount')
+        const button = e('div', {}, myButton, unmountButton)
         Freact.render(button, root)
       }
     </script>

@@ -3,19 +3,36 @@ import { instantiate } from './internal'
 /**
  * @param {Object} element - the react element, which is the vdom structure
  * @param {Object} container - the outer container, which is a real dom node
- * @returns {Component} - return the public intance of the root component
+ * @returns {Component | Node} - return the public intance of the root component
  */
 function render(element, container) {
-    const rootComponent = instantiate(element)
+    if (container.firstChild) {
+        unmountComponentAtNode(container)
+    }
+
+    const rootComponent = instantiate(element)  // the internal component implementation instance
     const node = rootComponent.mount()
     container.appendChild(node)
 
-    // return the public intance it provides
+    // expose the root internal component instance
+    node._internalInstance = rootComponent
+
+    // return the public intance it provides(an instance of Freact.Component or a dom node)
     return rootComponent.getPublicInstance()
 }
 
+/**
+ * @param {Node} containerNode - the node where the component mounted 
+ */
+function unmountComponentAtNode(containerNode) {
+    const node = containerNode.firstChild
+    const rootComponent = node._internalInstance
+    rootComponent.unmount()
+    containerNode.innerHTML = ''
+}
 
 
 export {
-    render
+    render,
+    unmountComponentAtNode
 }

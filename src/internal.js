@@ -39,6 +39,15 @@ class CompositeComponent {
         this.renderedComponent = renderedComponent
         return renderedComponent.mount()
     }
+
+    unmount() {
+        const instance = this.publicInstance
+        if (instance.componentWillUnmount) {
+            instance.componentWillMount()
+        }
+        const renderedComponent = this.renderedComponent
+        renderedComponent.unmount()
+    }
 }
 
 // helper function
@@ -87,7 +96,7 @@ class DOMComponent {
                 node.setAttribute(k, props[k])
             }
         })
-        // we need to instantiate all child element to get all read dom nodes
+        // we need to instantiate child elements to get all real dom nodes
         const renderedChildren = children.map(instantiate)
         this.renderedChildren = renderedChildren
 
@@ -95,6 +104,11 @@ class DOMComponent {
         childNodes.forEach(child => node.appendChild(child))
 
         return node
+    }
+
+    unmount() {
+        const renderedChildren = this.renderedChildren
+        renderedChildren.forEach((child) => child.unmount())
     }
 }
 
@@ -115,6 +129,11 @@ class TextComponent {
         this.node = node
         node.innerText = text
         return node
+    }
+
+    // avoid null pointer for the method reference
+    unmount() { 
+        console.log(`unmount for text "${this.text}"`) 
     }
 }
 
