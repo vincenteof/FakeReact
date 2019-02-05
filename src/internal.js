@@ -270,7 +270,7 @@ class DOMComponent {
 }
 
 function isText(child) {
-    return typeof(child) == "undefined"
+    return typeof(child) === "undefined"
 }
 
 // special kind of dom node
