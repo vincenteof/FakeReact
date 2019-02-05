@@ -23,7 +23,7 @@ class CompositeComponent {
         const { type, props } = element
         let instance = null
         let renderedElement
-        if (type.isFreactComponent && type.isFreactComponent()) {
+        if (isClass(type)) {
             instance = new type(props)
             // set the props to the intance for latter updating
             instance.props = props
@@ -39,6 +39,15 @@ class CompositeComponent {
         this.renderedComponent = renderedComponent
         return renderedComponent.mount()
     }
+}
+
+// helper function
+function isClass(type) {
+    // Freact.Component subclasses have this flag
+    return (
+        Boolean(type.prototype) &&
+        Boolean(type.prototype.isFreactComponent)
+    )
 }
 
 class DOMComponent {
@@ -68,7 +77,13 @@ class DOMComponent {
         }
 
         Object.keys(props).forEach((k) => {
-            if (k !== 'children') {
+            // TODO: special handling for event handler 
+            if (k.startsWith('on')) {
+                const eventName = k.substr(2, k.length)
+                if (eventName && eventName.length !== 0) {
+                    node.addEventListener(eventName, props[k])
+                }
+            } else if (k !== 'children') {
                 node.setAttribute(k, props[k])
             }
         })

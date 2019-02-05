@@ -11,15 +11,27 @@
       function sayHi() {
         console.log('Hi!!!')
       }
+      const e = Freact.createElement
+      class Button extends Freact.Component {
+        constructor() {
+          super()
+        }
+        render() {
+          const clickHandler = this.props.onClick
+          const text = this.props.children
+          return e('button', { onclick: clickHandler }, text)
+        }
+      }
       window.onload = function () {
+        console.log(Freact)
         const root = document.getElementById('root')
-        const e = Freact.createElement
-        const myButton = e('button', { onclick: "sayHi()" }, 'say', 'hi')
+        // const myButton = e('button', { onclick: "sayHi()" }, 'say', 'hi')
+        const myButton = e(Button, { onClick: sayHi }, 'sayHi')
         const button = e('div', {}, myButton, myButton, myButton)
         Freact.render(button, root)
       }
     </script>
-    <title>React App</title>
+    <title>Freact App</title>
   </head>
   <body>
     <noscript>
