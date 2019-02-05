@@ -6,9 +6,9 @@
 
 class CompositeComponent {
     constructor(element) {
-        this.currentElement = element
-        this.publicInstance = null
-        this.renderedComponent = null
+        this.currentElement = element   // freact element, vdom
+        this.publicInstance = null      // instance of `type`
+        this.renderedComponent = null   // instance of internal implementation
     }
 
     getPublicInstance() {
@@ -47,6 +47,56 @@ class CompositeComponent {
         }
         const renderedComponent = this.renderedComponent
         renderedComponent.unmount()
+    }
+
+    // when a composite component receives a new element, 
+    // it may either delegate the update to its rendered internal instance, 
+    // or unmount it and mount a new one in its place
+    receive(nextElement) {
+        // store previous rendered result
+        const instance = this.publicInstance
+        const prevRenderedComponent = this.renderedComponent
+        const prevRenderedElement = prevRenderedComponent.currentElement
+        
+        // updating
+        this.currentElement = nextElement
+        const nextType = nextElement.type
+        const nextProps = nextElement.props
+
+        // notice that both `nextRenderedElement` and `prevRenderedElement` refer to sub-level vdom,
+        // works to do in this level has been done in a parent-level
+        let nextRenderedElement
+        if (isClass(nextType)) {
+            if (instance.componentWillUpdate) {
+                instance.componentWillUpdate(nextProps)
+            }
+            // update the props and make a render
+            instance.props = nextProps
+            nextRenderedElement = instance.render()
+        } else {
+            nextRenderedElement = nextType(nextProps)
+        }
+
+        // sub-level vdom just have an update on props
+        if (prevRenderedElement.type === nextRenderedElement.type) {
+            prevRenderedComponent.receive(nextRenderedElement)
+            return
+        }
+        // type of sub-level vdom has changed, and a new dom node needs to be created
+        const prevNode = prevRenderedComponent.getHostNode()
+        prevRenderedComponent.unmount()
+        const nextRenderedComponent = instantiate(nextElement)
+        const nextNode = nextRenderedComponent.mount()
+        this.renderedComponent = nextRenderedComponent
+        prevNode.parentNode.replaceChild(nextNode, prevNode)
+    }
+
+    /**
+     *  @returns {Node} - the first real dom node
+     */
+    getHostNode() {
+        // this will recursively drill down any composites
+        return this.renderedComponent.getHostNode()
     }
 }
 
@@ -110,6 +160,111 @@ class DOMComponent {
         const renderedChildren = this.renderedChildren
         renderedChildren.forEach((child) => child.unmount())
     }
+
+    receive(nextElement) {
+        const node = this.node
+        const prevElement = this.currentElement
+        const prevProps = prevElement.props
+        const nextProps = nextElement.props
+        this.currentElement = nextElement
+
+        Object.keys(prevProps).forEach((k) => {
+            // TODO: special handling for event handler 
+            if (k.startsWith('on')) {
+                const eventName = k.substr(2, k.length)
+                if (eventName && eventName.length !== 0) {
+                    node.removeEventListener(eventName, prevProps[k])
+                }
+            } else if (k !== 'children') {
+                node.removeAttribute(k)
+            }
+        })
+
+        Object.keys(nextProps).forEach((k) => {
+            // TODO: special handling for event handler 
+            if (k.startsWith('on')) {
+                const eventName = k.substr(2, k.length)
+                if (eventName && eventName.length !== 0) {
+                    node.addEventListener(eventName, nextProps[k])
+                }
+            } else if (k !== 'children') {
+                node.setAttribute(k, nextProps[k])
+            }
+        })
+
+        // for children
+        let prevChildren = prevProps.children || [];
+        if (!Array.isArray(prevChildren)) {
+          prevChildren = [prevChildren];
+        }
+        let nextChildren = nextProps.children || [];
+        if (!Array.isArray(nextChildren)) {
+          nextChildren = [nextChildren];
+        }
+
+        const prevRenderedChildren = this.renderedChildren
+        const nextRenderedChildren = []
+        const operationQueue = []
+
+        for (let i = 0; i < nextChildren.length; i++) {
+            // add new node
+            const prevChild = prevRenderedChildren[i]
+            if (!prevChild) {
+                const nextChild = instantiate(nextChildren[i])
+                const node = nextChild.mount()
+                operationQueue.push({ type: 'ADD', node })
+                nextRenderedChildren.push(nextChild)
+                continue
+            }
+            // replace node of different types
+            const canUpdate = prevChildren[i].type === nextChildren[i].type
+            if (!canUpdate) {
+                const prevNode = prevChild.getHostNode()
+                prevChild.unmount()
+                const nextChild = instantiate(nextChildren[i])
+                const nextNode = nextChild.mount()
+                operationQueue.push({ type: 'REPLACE', prevNode, nextNode })
+                nextRenderedChildren.push(nextChild)
+                continue
+            }
+            // just update props
+            prevChild.receive(nextChildren[i])
+            nextRenderedChildren.push(prevChild)
+        }
+
+        // unmount node not exists
+        for (let j = nextChildren.length; j < prevChildren.length; j++) {
+            const prevChild = prevChildren[i]
+            const node = prevChild.getHostNode()
+            prevChild.unmount()
+            operationQueue.push({ type: 'REMOVE', node })
+        }
+
+        this.renderedChildren = nextRenderedChildren
+
+        // execute the batch operation
+        while (operationQueue.length > 0) {
+            const operation = operationQueue.shift()
+            switch (operation.type) {
+                case 'ADD':
+                    this.node.appendChild(operation.node)
+                    break
+                case 'REPLACE':
+                    this.node.replaceChild(operation.nextNode, operation.prevNode)
+                    break
+                case 'DELETE':
+                    this.node.removeChild(operation.node)
+                    break
+                default: 
+                    console.error('unknow type of operation')
+                    break
+            }
+        }
+    }
+
+    getHostNode() {
+        return this.node
+    }  
 }
 
 // special kind of dom node
@@ -134,6 +289,14 @@ class TextComponent {
     // avoid null pointer for the method reference
     unmount() { 
         console.log(`unmount for text "${this.text}"`) 
+    }
+
+    receive(nextElement) {
+
+    }
+
+    getHostNode() {
+        return this.node
     }
 }
 

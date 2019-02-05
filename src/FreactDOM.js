@@ -7,6 +7,14 @@ import { instantiate } from './internal'
  */
 function render(element, container) {
     if (container.firstChild) {
+        const prevNode = container.firstChild
+        const prevRootComponent = prevNode._internalInstance
+        const prevElement = prevNode.currentElement
+
+        if (prevElement.type === element.type) {
+            prevRootComponent.recieve(element)
+            return
+        } 
         unmountComponentAtNode(container)
     }
 
