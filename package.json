@@ -6,8 +6,8 @@
   "browser": "dist/freact.min.js",
   "scripts": {
     "build": "npm run lint && npm run rollup && npm run uglify",
-    "test": "jest",
-    "rollup": "rollup -c",
+    "test": "cross-env BABEL_ENV=test jest",
+    "rollup": "cross-env BABEL_ENV=build rollup -c",
     "uglify": "./node_modules/.bin/uglifyjs dist/freact.js -­o dist/freact.min.js",
     "lint": "eslint src/*.js"
   },
@@ -31,6 +31,7 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
+    "cross-env": "^5.2.0",
     "eslint": "^5.13.0",
     "jest": "^24.0.0",
     "rollup": "^1.1.2",

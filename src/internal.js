@@ -1,3 +1,4 @@
+import { isClass, isText } from './util'
 
 /*
 ** These classes are just implementation details, and has nothing to do with the public api.
@@ -12,7 +13,7 @@ class CompositeComponent {
     }
 
     getPublicInstance() {
-        return this.getPublicInstance()
+        return this.publicInstance
     }
 
     /**
@@ -98,15 +99,6 @@ class CompositeComponent {
         // this will recursively drill down any composites
         return this.renderedComponent.getHostNode()
     }
-}
-
-// helper function
-function isClass(type) {
-    // Freact.Component subclasses have this flag
-    return (
-        Boolean(type.prototype) &&
-        Boolean(type.prototype.isFreactComponent)
-    )
 }
 
 class DOMComponent {
@@ -269,10 +261,6 @@ class DOMComponent {
     }  
 }
 
-function isText(child) {
-    return typeof(child) === "undefined"
-}
-
 // special kind of dom node
 class TextComponent {
     constructor(text) {
@@ -284,6 +272,7 @@ class TextComponent {
         return this.node
     }
 
+    // TODO: use dom text node to replace span
     mount() {
         const text = this.text
         const node = document.createElement('span')

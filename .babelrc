@@ -1,0 +1,25 @@
+{
+    "env": {
+        "test": {
+            "presets": [
+                [
+                    "@babel/env",
+                    {
+                        "useBuiltIns": "usage"
+                    }
+                ]
+            ]
+        },
+        "build": {
+            "presets": [
+                [
+                    "@babel/env",
+                    {
+                        "useBuiltIns": "usage",
+                        "modules": false
+                    }
+                ]
+            ]
+        }
+    }
+}
