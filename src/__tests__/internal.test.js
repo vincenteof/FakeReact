@@ -8,10 +8,10 @@ describe('instantiate for text', () => {
     })
     const node = text.mount()
     test('node type is span', () => {
-        expect(node.nodeName).toBe('SPAN')
+        expect(node.nodeName).toBe('#text')
     })
     test('innerText equal to Hello World', () => {
-        expect(node.innerText).toBe('Hello World')
+        expect(node.nodeValue).toBe('Hello World')
     })
 })
 

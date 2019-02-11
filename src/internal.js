@@ -272,12 +272,10 @@ class TextComponent {
         return this.node
     }
 
-    // TODO: use dom text node to replace span
     mount() {
         const text = this.text
-        const node = document.createElement('span')
+        const node = document.createTextNode(text)
         this.node = node
-        node.innerText = text
         return node
     }
 
@@ -287,7 +285,7 @@ class TextComponent {
     }
 
     receive(nextElement) {
-        this.node.innerText = nextElement
+        this.node.nodeValue = nextElement
     }
 
     getHostNode() {
