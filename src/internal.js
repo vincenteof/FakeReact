@@ -1,4 +1,4 @@
-import { isClass, isText } from './util'
+import { isClass, isText, attachListenerToNode, removeListenerFromNode } from './util'
 
 /*
 ** These classes are just implementation details, and has nothing to do with the public api.
@@ -130,10 +130,7 @@ class DOMComponent {
         Object.keys(props).forEach((k) => {
             // TODO: special handling for event handler 
             if (k.startsWith('on')) {
-                const eventName = k.substr(2, k.length)
-                if (eventName && eventName.length !== 0) {
-                    node.addEventListener(eventName, props[k])
-                }
+                attachListenerToNode(node, k, props[k])
             } else if (k !== 'children') {
                 node.setAttribute(k, props[k])
             }
@@ -163,10 +160,7 @@ class DOMComponent {
         Object.keys(prevProps).forEach((k) => {
             // TODO: special handling for event handler 
             if (k.startsWith('on')) {
-                const eventName = k.substr(2, k.length)
-                if (eventName && eventName.length !== 0) {
-                    node.removeEventListener(eventName, prevProps[k])
-                }
+                removeListenerFromNode(node, k, prevProps[k])
             } else if (k !== 'children') {
                 node.removeAttribute(k)
             }
@@ -175,10 +169,7 @@ class DOMComponent {
         Object.keys(nextProps).forEach((k) => {
             // TODO: special handling for event handler 
             if (k.startsWith('on')) {
-                const eventName = k.substr(2, k.length)
-                if (eventName && eventName.length !== 0) {
-                    node.addEventListener(eventName, nextProps[k])
-                }
+                attachListenerToNode(node, k, nextProps[k])
             } else if (k !== 'children') {
                 node.setAttribute(k, nextProps[k])
             }

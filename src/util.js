@@ -12,7 +12,29 @@ function isText(child) {
     return typeof(child) === "undefined"
 }
 
+// attach event listener to dom node
+function attachListenerToNode(node, prop, listener) {
+    const eventName = prop.startsWith('on')
+        ? prop.substr(2, prop.length)
+        : prop
+    if (eventName && eventName.length !== 0) {
+        node.addEventListener(eventName, listener)
+    }
+}
+
+// remove event listener from dom node
+function removeListenerFromNode(node, prop, listener) {
+    const eventName = prop.startsWith('on')
+        ? prop.substr(2, prop.length)
+        : prop
+    if (eventName && eventName.length !== 0) {
+        node.removeEventListener(eventName, listener)
+    }
+}
+
 export {
     isClass,
-    isText
+    isText,
+    attachListenerToNode,
+    removeListenerFromNode
 }
