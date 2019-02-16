@@ -40,7 +40,7 @@ module.exports = {
       }
     ],
     'comma-style': ['error', 'last'],
-    complexity: 'error',
+    complexity: 'off',
     'computed-property-spacing': ['error', 'never'],
     'consistent-return': 'off',
     'consistent-this': 'error',
@@ -239,7 +239,7 @@ module.exports = {
       }
     ],
     'semi-style': ['error', 'last'],
-    'sort-keys': ['error', 'desc'],
+    'sort-keys': 'off',
     'sort-vars': 'error',
     'space-before-blocks': 'error',
     'space-before-function-paren': 'off',

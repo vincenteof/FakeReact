@@ -84,17 +84,31 @@ class CompositeComponent {
     }
 
     // sub-level vdom just have an update on props
-    if (prevRenderedElement.type === nextRenderedElement.type) {
+    const bothNull =
+      Object.is(prevRenderedElement, null) &&
+      Object.is(nextRenderedElement, null)
+
+    const sameType =
+      prevRenderedElement.type &&
+      nextRenderedElement.type &&
+      prevRenderedElement.type === nextRenderedElement.type
+
+    if (bothNull || sameType) {
       prevRenderedComponent.receive(nextRenderedElement)
       return
     }
+
     // type of sub-level vdom has changed, and a new dom node needs to be created
     const prevNode = prevRenderedComponent.getHostNode()
     prevRenderedComponent.unmount()
     const nextRenderedComponent = instantiate(nextElement)
     const nextNode = nextRenderedComponent.mount()
     this.renderedComponent = nextRenderedComponent
-    prevNode.parentNode.replaceChild(nextNode, prevNode)
+    if (Object.is(nextNode, null)) {
+      prevNode.parentNode.removeChild(prevNode)
+    } else {
+      prevNode.parentNode.replaceChild(nextNode, prevNode)
+    }
   }
 
   /**
@@ -145,7 +159,11 @@ class DOMComponent {
     this.renderedChildren = renderedChildren
 
     const childNodes = renderedChildren.map(item => item.mount())
-    childNodes.forEach(child => node.appendChild(child))
+    childNodes.forEach(child => {
+      if (!Object.is(child, null)) {
+        node.appendChild(child)
+      }
+    })
 
     return node
   }
@@ -204,21 +222,44 @@ class DOMComponent {
         nextRenderedChildren.push(nextChild)
         continue
       }
+
+      // just ignore dom update for null
+      const bothNull =
+        Object.is(prevChildren[i], null) &&
+        Object.is(nextChildren[i], null)
+      if (bothNull) {
+        continue
+      }
+
       // replace node of different types
-      const canUpdate =
-        (isText(prevChildren[i]) && isText(nextChildren[i])) ||
+      const bothText = isText(prevChildren[i]) && isText(nextChildren[i])
+      const sameType =
+        prevChildren[i] &&
+        nextChildren[i] &&
         prevChildren[i].type === nextChildren[i].type
+      const canUpdate = bothText || sameType
 
       if (!canUpdate) {
         const prevNode = prevChild.getHostNode()
         prevChild.unmount()
         const nextChild = instantiate(nextChildren[i])
         const nextNode = nextChild.mount()
-        operationQueue.push({
-          type: 'REPLACE',
-          prevNode,
-          nextNode
-        })
+        if (Object.is(nextNode, null)) {
+          // do we need to unmount ???
+          operationQueue.push({
+            type: 'REMOVE',
+            node: prevNode
+          })
+        } else if (Object.is(prevNode, null)) {
+          // TODO: temp fix, which doesn't match the semantics
+          operationQueue.push({ type: 'ADD', node: nextNode })
+        } else {
+          operationQueue.push({
+            type: 'REPLACE',
+            prevNode,
+            nextNode
+          })
+        }
         nextRenderedChildren.push(nextChild)
         continue
       }
@@ -297,11 +338,39 @@ class TextComponent {
   }
 }
 
+// when render returns null
+class NullComponent {
+  getPublicInstance() {
+    return null
+  }
+
+  mount() {
+    return null
+  }
+
+  // avoid null pointer for the method reference
+  unmount() {
+    console.log(`unmount for null"`)
+  }
+
+  receive() {
+    console.log('receive for null')
+  }
+
+  getHostNode() {
+    return null
+  }
+}
+
 /**
  * @param {Object} element - react element or some text
  * @returns {CompositeComponent | DOMComponent} - an internal instance of the react element
  */
 function instantiate(element) {
+  if (Object.is(element, null)) {
+    return new NullComponent()
+  }
+
   if (typeof element === 'string') {
     return new TextComponent(element)
   }

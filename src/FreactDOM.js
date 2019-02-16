@@ -20,10 +20,11 @@ function render(element, container) {
 
   const rootComponent = instantiate(element) // the internal component implementation instance
   const node = rootComponent.mount()
-  container.appendChild(node)
-
-  // expose the root internal component instance
-  node._internalInstance = rootComponent
+  if (!Object.is(node, null)) {
+    container.appendChild(node)
+    // expose the root internal component instance
+    node._internalInstance = rootComponent
+  }
 
   // return the public intance it provides(an instance of Freact.Component or a dom node)
   return rootComponent.getPublicInstance()
