@@ -251,8 +251,15 @@ class DOMComponent {
             node: prevNode
           })
         } else if (Object.is(prevNode, null)) {
-          // TODO: temp fix, which doesn't match the semantics
-          operationQueue.push({ type: 'ADD', node: nextNode })
+          const referenceNode =
+            i + 1 < prevRenderedChildren.length
+              ? prevRenderedChildren[i + 1].getHostNode()
+              : null
+          operationQueue.push({
+            type: 'INSERT_BEFORE',
+            node: nextNode,
+            referenceNode
+          })
         } else {
           operationQueue.push({
             type: 'REPLACE',
@@ -293,6 +300,9 @@ class DOMComponent {
           break
         case 'REMOVE':
           this.node.removeChild(operation.node)
+          break
+        case 'INSERT_BEFORE':
+          this.node.insertBefore(operation.node, operation.referenceNode)
           break
         default:
           console.error('unknow type of operation')
