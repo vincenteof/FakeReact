@@ -44,7 +44,9 @@
     "uglify-es": "^3.3.9"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.2.5"
+    "@babel/polyfill": "^7.2.5",
+    "invariant": "^2.2.4",
+    "warning": "^4.0.3"
   },
   "husky": {
     "hooks": {
