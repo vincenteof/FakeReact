@@ -40,6 +40,10 @@ function isNull(obj) {
 
 // move node to some position after referenceNode
 function moveNodeAfter(parent, node, referenceNode, pos) {
+  if (!referenceNode) {
+    parent.insertBefore(node, parent.firstChild)
+  }
+
   let iterIndex = pos
   let sibling = referenceNode.nextSibling
   if (isNull(sibling)) {
