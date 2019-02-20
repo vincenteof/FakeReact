@@ -38,15 +38,29 @@ function isNull(obj) {
   return Object.is(obj, null)
 }
 
-// insert or moving a node to a certain position
-function insertNode(parent, node, mountedPos, pos) {
-  const childNodes = parent.childNodes()
-  invariant(
-    pos < childNodes.length,
-    'inserting node position should in the range of length'
-  )
-  const target = mountedPos > pos ? childNodes[pos] : childNodes[pos + 1]
-  parent.insertBefore(node, target)
+// move node to some position after referenceNode
+function moveNodeAfter(parent, node, referenceNode, pos) {
+  let iterIndex = pos
+  let sibling = referenceNode.nextSibling
+  if (isNull(sibling)) {
+    invariant(
+      referenceNode === parent.lastChild,
+      'referenceNode should be the child'
+    )
+    invariant(pos === 0, 'position for last child can only be zero')
+    parent.appendChild(node)
+    return
+  }
+
+  while (iterIndex > 0) {
+    if (isNull(sibling)) {
+      invariant(false, 'position should not exceed the total children')
+    }
+    sibling = sibling.nextSibling
+    iterIndex -= 1
+  }
+
+  parent.insertBefore(node, sibling)
 }
 
 export {
@@ -55,5 +69,5 @@ export {
   attachListenerToNode,
   removeListenerFromNode,
   isNull,
-  insertNode
+  moveNodeAfter
 }
