@@ -33,11 +33,6 @@ function removeListenerFromNode(node, prop, listener) {
   }
 }
 
-// whether an object is null
-function isNull(obj) {
-  return Object.is(obj, null)
-}
-
 // move node to some position after referenceNode
 function moveNodeAfter(parent, node, referenceNode, pos) {
   if (!referenceNode) {
@@ -46,7 +41,7 @@ function moveNodeAfter(parent, node, referenceNode, pos) {
 
   let iterIndex = pos
   let sibling = referenceNode.nextSibling
-  if (isNull(sibling)) {
+  if (sibling === null) {
     invariant(
       referenceNode === parent.lastChild,
       'referenceNode should be the child'
@@ -57,7 +52,7 @@ function moveNodeAfter(parent, node, referenceNode, pos) {
   }
 
   while (iterIndex > 0) {
-    if (isNull(sibling)) {
+    if (sibling === null) {
       invariant(false, 'position should not exceed the total children')
     }
     sibling = sibling.nextSibling
@@ -72,6 +67,5 @@ export {
   isText,
   attachListenerToNode,
   removeListenerFromNode,
-  isNull,
   moveNodeAfter
 }

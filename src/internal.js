@@ -85,8 +85,7 @@ class CompositeComponent {
 
     // sub-level vdom just have an update on props
     const bothNull =
-      Object.is(prevRenderedElement, null) &&
-      Object.is(nextRenderedElement, null)
+      prevRenderedElement === null && nextRenderedElement === null
 
     const sameType =
       prevRenderedElement.type &&
@@ -104,7 +103,7 @@ class CompositeComponent {
     const nextRenderedComponent = instantiate(nextElement)
     const nextNode = nextRenderedComponent.mount()
     this.renderedComponent = nextRenderedComponent
-    if (Object.is(nextNode, null)) {
+    if (nextNode === null) {
       prevNode.parentNode.removeChild(prevNode)
     } else {
       prevNode.parentNode.replaceChild(nextNode, prevNode)
@@ -160,7 +159,7 @@ class DOMComponent {
 
     const childNodes = renderedChildren.map(item => item.mount())
     childNodes.forEach(child => {
-      if (!Object.is(child, null)) {
+      if (child !== null) {
         node.appendChild(child)
       }
     })
@@ -224,9 +223,8 @@ class DOMComponent {
       }
 
       // just ignore dom update for null
-      const bothNull =
-        Object.is(prevChildren[i], null) &&
-        Object.is(nextChildren[i], null)
+      const bothNull = prevChildren[i] === null && nextChildren[i] === null
+
       if (bothNull) {
         continue
       }
@@ -244,13 +242,13 @@ class DOMComponent {
         prevChild.unmount()
         const nextChild = instantiate(nextChildren[i])
         const nextNode = nextChild.mount()
-        if (Object.is(nextNode, null)) {
+        if (nextNode === null) {
           // do we need to unmount ???
           operationQueue.push({
             type: 'REMOVE',
             node: prevNode
           })
-        } else if (Object.is(prevNode, null)) {
+        } else if (prevNode === null) {
           const referenceNode =
             i + 1 < prevRenderedChildren.length
               ? prevRenderedChildren[i + 1].getHostNode()
@@ -377,7 +375,7 @@ class NullComponent {
  * @returns {CompositeComponent | DOMComponent} - an internal instance of the react element
  */
 function instantiate(element) {
-  if (Object.is(element, null)) {
+  if (element === null) {
     return new NullComponent()
   }
 
