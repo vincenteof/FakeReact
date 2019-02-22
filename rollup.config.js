@@ -8,7 +8,7 @@ export default {
     file: 'dist/freact.js',
     format: 'umd',
     name: 'Freact',
-    sourcemap: true
+    sourcemap: 'inline'
   },
   plugins: [
     resolve(),

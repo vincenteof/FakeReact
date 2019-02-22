@@ -10,10 +10,12 @@ function createElement(type, props, ...children) {
   } else if (children.length === 1) {
     childrenForProps = children[0]
   }
-  props.children = childrenForProps
+  const realProps = props ? props : {}
+  realProps.children = childrenForProps
+
   return {
     type,
-    props
+    props: realProps
   }
 }
 

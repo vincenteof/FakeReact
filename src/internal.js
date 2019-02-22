@@ -4,6 +4,7 @@ import {
   attachListenerToNode,
   removeListenerFromNode
 } from './util'
+import { createElement } from './Freact'
 
 /*
  ** These classes are just implementation details, and has nothing to do with the public api.
@@ -314,9 +315,15 @@ class DOMComponent {
   }
 }
 
+const SpecialElementTypes = {
+  TEXT: '$$TEXT##',
+  NULL: '$$NULL##'
+}
+
 // special kind of dom node
 class TextComponent {
   constructor(text) {
+    this.currentElement = createElement(SpecialElementTypes.TEXT, { text })
     this.text = text
     this.node = null
   }
@@ -338,6 +345,10 @@ class TextComponent {
   }
 
   receive(nextElement) {
+    this.currentElement = createElement(SpecialElementTypes.TEXT, {
+      text: nextElement
+    })
+    this.text = nextElement
     this.node.nodeValue = nextElement
   }
 
@@ -348,6 +359,10 @@ class TextComponent {
 
 // when render returns null
 class NullComponent {
+  constructor() {
+    this.currentElement = createElement(SpecialElementTypes.NULL)
+  }
+
   getPublicInstance() {
     return null
   }
@@ -393,4 +408,11 @@ function instantiate(element) {
   return renderedComponent
 }
 
-export { CompositeComponent, DOMComponent, instantiate }
+export {
+  instantiate,
+  SpecialElementTypes,
+  DOMComponent,
+  CompositeComponent,
+  TextComponent,
+  NullComponent
+}

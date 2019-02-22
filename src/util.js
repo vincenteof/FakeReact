@@ -1,4 +1,4 @@
-import invariant from 'invariant'
+import invariant from 'invariant/browser'
 
 // it checks whether a class is a subclass of freact component
 function isClass(type) {
