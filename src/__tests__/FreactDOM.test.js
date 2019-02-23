@@ -29,3 +29,5 @@ describe('render', () => {
     expect(root.hasChildNodes()).toEqual(true)
   })
 })
+
+// describe('render with keys', () => {})

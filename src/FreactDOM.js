@@ -20,7 +20,7 @@ function render(element, container) {
 
   const rootComponent = instantiate(element) // the internal component implementation instance
   const node = rootComponent.mount()
-  if (!Object.is(node, null)) {
+  if (node !== null) {
     container.appendChild(node)
     // expose the root internal component instance
     node._internalInstance = rootComponent

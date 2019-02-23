@@ -1,4 +1,4 @@
-import invariant from 'invariant/browser'
+import invariant from 'invariant'
 
 // it checks whether a class is a subclass of freact component
 function isClass(type) {
@@ -6,11 +6,6 @@ function isClass(type) {
   return (
     Boolean(type.prototype) && Boolean(type.prototype.isFreactComponent)
   )
-}
-
-// it checks whether a react child(element) is just text
-function isText(child) {
-  return typeof child === 'undefined'
 }
 
 // attach event listener to dom node
@@ -34,7 +29,7 @@ function removeListenerFromNode(node, prop, listener) {
 }
 
 // move node to some position after referenceNode
-function moveNodeAfter(parent, node, referenceNode, pos) {
+function insertAfter(parent, node, referenceNode, pos) {
   if (!referenceNode) {
     parent.insertBefore(node, parent.firstChild)
   }
@@ -64,8 +59,7 @@ function moveNodeAfter(parent, node, referenceNode, pos) {
 
 export {
   isClass,
-  isText,
   attachListenerToNode,
   removeListenerFromNode,
-  moveNodeAfter
+  insertAfter
 }

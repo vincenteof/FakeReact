@@ -28,37 +28,45 @@
       window.onload = function() {
         console.log(Freact)
         const root = document.getElementById('root')
-        const myButton = e(Button, { onClick: sayHi }, 'sayHi')
+        const myButton = e(
+          Button,
+          { onClick: sayHi, key: '0' },
+          Freact.createTextElement('sayHi')
+        )
         const unmountButton = e(
           Button,
           {
             onClick: function() {
               Freact.unmountComponentAtNode(root)
-            }
+            },
+            key: '1'
           },
-          'unmount'
+          Freact.createTextElement('unmount')
         )
         function rerender() {
-          // Freact.render(e('div', {}, myButton, unmountButton), root)
           Freact.render(
-            e('div', {}, null, unmountButton, myButton, unmountButton),
+            e('div', {}, unmountButton, rerenderButton, myButton),
             root
           )
         }
-        const rerenderButton = e(Button, { onClick: rerender }, 'rerender')
-        const button = e(
+        const rerenderButton = e(
+          Button,
+          { onClick: rerender, key: '3' },
+          Freact.createTextElement('rerender')
+        )
+        const buttons = e(
           'div',
           {},
           myButton,
           unmountButton,
-          null,
           rerenderButton
         )
-        Freact.render(button, root)
+        Freact.render(buttons, root)
       }
     </script>
     <title>Freact App</title>
   </head>
+
   <body>
     <noscript>
       You need to enable JavaScript to run this app.

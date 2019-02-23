@@ -9,7 +9,8 @@
     "test": "cross-env BABEL_ENV=test jest",
     "rollup": "cross-env BABEL_ENV=build rollup -c",
     "uglify": "./node_modules/.bin/uglifyjs dist/freact.js -­o dist/freact.min.js",
-    "lint": "eslint src/*.js"
+    "lint": "eslint src/*.js",
+    "watch": "watch \"npm run build\" \"src\""
   },
   "keywords": [
     "freact",
@@ -41,7 +42,9 @@
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-node-resolve": "^4.0.0",
-    "uglify-es": "^3.3.9"
+    "rollup-plugin-replace": "^2.1.0",
+    "uglify-es": "^3.3.9",
+    "watch": "^1.0.2"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
