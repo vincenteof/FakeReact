@@ -183,13 +183,6 @@ class DOMComponent {
   }
 
   receive(nextElement) {
-    if (nextElement.type !== this.currentElement.type) {
-      this.unmount()
-      this.currentElement = nextElement
-      this.mount()
-      return
-    }
-
     const node = this.node
     const prevElement = this.currentElement
     const prevProps = prevElement.props
@@ -269,6 +262,7 @@ function executeDOMOperations(parentNode, patches) {
         break
       default:
         warning(
+          false,
           `unknow type of operation in operations queue: ${operation.type}`
         )
         break
@@ -308,11 +302,9 @@ class TextComponent {
   }
 
   receive(nextElement) {
-    this.currentElement = createElement(SpecialElementTypes.TEXT, {
-      text: nextElement
-    })
-    this.text = nextElement
-    this.node.nodeValue = nextElement
+    this.currentElement = nextElement
+    this.text = nextElement.props.text
+    this.node.nodeValue = this.text
   }
 
   getHostNode() {

@@ -44,10 +44,18 @@
           Freact.createTextElement('unmount')
         )
         function rerender() {
-          Freact.render(
-            e('div', {}, unmountButton, rerenderButton, myButton),
-            root
+          // const div = e('div', {}, unmountButton, rerenderButton, myButton)
+
+          // const fuckBtn = e(Button, { key: '3' }, Freact.createTextElement('fuck'))
+          // const fuckSpn = e('span', { key: '3' }, Freact.createTextElement('fuck'))
+          // const div = e('div', {}, unmountButton, fuckSpn, myButton)
+
+          const div = e(
+            'span',
+            { key: '0' },
+            Freact.createTextElement('some')
           )
+          Freact.render(div, root)
         }
         const rerenderButton = e(
           Button,

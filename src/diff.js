@@ -16,12 +16,14 @@ function diff(prevComponents, nextElements, instantiate) {
   const prevComponentMap = converToMap(prevComponents, true)
   const nextElemMap = converToMap(nextElements)
   const patches = []
+  const repalceOrDelete = []
   const nextComponents = []
 
   for (; nextIndex < nextElements.length; nextIndex++) {
     const nextElem = nextElements[nextIndex]
     const nextKey = nextElem.props.key
     const prevComponent = prevComponentMap[nextKey]
+    const prevElem = prevComponent.currentElement
     const idx = nextIndex - flagIndex >= 1 ? nextIndex - flagIndex - 1 : 0
 
     if (!prevComponent) {
@@ -37,6 +39,26 @@ function diff(prevComponents, nextElements, instantiate) {
       continue
     }
 
+    let currentComponent = prevComponent
+    // update prev component
+    if (prevElem.type === nextElem.type) {
+      prevComponent.receive(nextElem)
+    } else {
+      const prevNode = prevComponent.getHostNode()
+      prevComponent.unmount()
+      currentComponent = instantiate(nextElem)
+      // patches.push({
+      //   type: OperationTypes.REPLACE,
+      //   prevNode,
+      //   nextNode: currentComponent.mount()
+      // })
+      repalceOrDelete.push({
+        type: OperationTypes.REPLACE,
+        prevNode,
+        nextNode: currentComponent.mount()
+      })
+    }
+
     if (prevComponent._mountedIndex >= lastIndex) {
       lastIndex = prevComponent._mountedIndex
       flagIndex = nextIndex
@@ -50,8 +72,8 @@ function diff(prevComponents, nextElements, instantiate) {
       })
     }
 
-    prevComponent._mountedIndex = nextIndex
-    nextComponents.push(prevComponent)
+    currentComponent._mountedIndex = nextIndex
+    nextComponents.push(currentComponent)
   }
 
   for (const prevKey of Object.keys(prevComponentMap)) {
@@ -64,7 +86,7 @@ function diff(prevComponents, nextElements, instantiate) {
     }
   }
 
-  return [patches, nextComponents]
+  return [patches.concat(repalceOrDelete), nextComponents]
 }
 
 /**
