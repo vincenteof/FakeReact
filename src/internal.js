@@ -238,7 +238,6 @@ function executeDOMOperations(parentNode, patches) {
     const operation = patches.shift()
     switch (operation.type) {
       case OperationTypes.INSERT:
-        // parentNode.appendChild(operation.node)
         insertAfter(
           parentNode,
           operation.node,

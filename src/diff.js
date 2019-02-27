@@ -1,4 +1,4 @@
-import { OperationTypes } from './constants'
+import { OperationTypes, SpecialElementTypes } from './constants'
 import warning from 'warning'
 
 /**
@@ -43,15 +43,28 @@ function diff(prevComponents, nextElements, instantiate) {
     // update prev component
     if (prevElem.type === nextElem.type) {
       prevComponent.receive(nextElem)
+    } else if (prevElem.type === SpecialElementTypes.NULL) {
+      const nextComponent = instantiate(nextElem)
+      nextComponent._mountedIndex = nextIndex
+      nextComponents.push(nextComponent)
+      patches.push({
+        type: OperationTypes.INSERT,
+        node: nextComponent.mount(),
+        referenceNode: lastNode,
+        idx
+      })
+      continue
+    } else if (nextElem.type === SpecialElementTypes.NULL) {
+      const prevNode = prevComponent.getHostNode()
+      prevComponent.unmount()
+      repalceOrDelete.push({
+        type: OperationTypes.REMOVE,
+        node: prevNode
+      })
     } else {
       const prevNode = prevComponent.getHostNode()
       prevComponent.unmount()
       currentComponent = instantiate(nextElem)
-      // patches.push({
-      //   type: OperationTypes.REPLACE,
-      //   prevNode,
-      //   nextNode: currentComponent.mount()
-      // })
       repalceOrDelete.push({
         type: OperationTypes.REPLACE,
         prevNode,
@@ -100,12 +113,8 @@ function converToMap(lst, isComponent) {
     const key = isComponent
       ? item.currentElement.props.key
       : item.props.key
-    if (!key) {
-      warning('freact element should contain a key')
-    }
-    if (result[key]) {
-      warning('elements should not contain duplicate keys')
-    }
+    warning(key, 'freact element should contain a key')
+    warning(!result[key], 'elements should not contain duplicate keys')
     result[key] = item
   })
   return result
