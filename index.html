@@ -31,7 +31,7 @@
         const myButton = e(
           Button,
           { onClick: sayHi, key: '0' },
-          Freact.createTextElement('sayHi')
+          Freact.createTextElement('sayHi', '0')
         )
         const unmountButton = e(
           Button,
@@ -46,14 +46,37 @@
         function rerender() {
           // const div = e('div', {}, unmountButton, rerenderButton, myButton)
 
-          // const fuckBtn = e(Button, { key: '3' }, Freact.createTextElement('fuck'))
+          const fuckBtn = e(
+            Button,
+            { key: '4', onClick: thirdRender },
+            Freact.createTextElement('fuck', '0')
+          )
+          const div = e(
+            'div',
+            {},
+            unmountButton,
+            Freact.createNullElement('3'),
+            myButton,
+            fuckBtn
+          )
+          // const div = e('div', {}, unmountButton, Freact.createNullElement('3'), Freact.createNullElement('0'))
+
           // const fuckSpn = e('span', { key: '3' }, Freact.createTextElement('fuck'))
           // const div = e('div', {}, unmountButton, fuckSpn, myButton)
 
+          // const div = e(
+          //   'span',
+          //   { key: '0' },
+          //   Freact.createTextElement('some')
+          // )
+          Freact.render(div, root)
+        }
+        function thirdRender() {
           const div = e(
-            'span',
-            { key: '0' },
-            Freact.createTextElement('some')
+            'div',
+            {},
+            Freact.createTextElement('wow', '4'),
+            myButton
           )
           Freact.render(div, root)
         }
@@ -67,6 +90,7 @@
           {},
           myButton,
           unmountButton,
+          Freact.createNullElement('2'),
           rerenderButton
         )
         Freact.render(buttons, root)

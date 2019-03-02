@@ -23,7 +23,6 @@ function diff(prevComponents, nextElements, instantiate) {
     const nextElem = nextElements[nextIndex]
     const nextKey = nextElem.props.key
     const prevComponent = prevComponentMap[nextKey]
-    const prevElem = prevComponent.currentElement
     const idx = nextIndex - flagIndex >= 1 ? nextIndex - flagIndex - 1 : 0
 
     if (!prevComponent) {
@@ -39,22 +38,29 @@ function diff(prevComponents, nextElements, instantiate) {
       continue
     }
 
-    let currentComponent = prevComponent
+    const prevElem = prevComponent.currentElement
+    let nextComponent = prevComponent
     // update prev component
     if (prevElem.type === nextElem.type) {
       prevComponent.receive(nextElem)
     } else if (prevElem.type === SpecialElementTypes.NULL) {
-      const nextComponent = instantiate(nextElem)
-      nextComponent._mountedIndex = nextIndex
-      nextComponents.push(nextComponent)
+      // const nextComponent = instantiate(nextElem)
+      nextComponent = instantiate(nextElem)
+      // nextComponent.mount()
+      // nextComponent._mountedIndex = nextIndex
+      // nextComponents.push(nextComponent)
       patches.push({
         type: OperationTypes.INSERT,
         node: nextComponent.mount(),
         referenceNode: lastNode,
         idx
       })
-      continue
+      // continue
     } else if (nextElem.type === SpecialElementTypes.NULL) {
+      // const nextComponent = instantiate(nextElem)
+      nextComponent = instantiate(nextElem)
+      // nextComponent._mountedIndex = nextIndex
+      // nextComponents.push(nextComponent)
       const prevNode = prevComponent.getHostNode()
       prevComponent.unmount()
       repalceOrDelete.push({
@@ -64,11 +70,11 @@ function diff(prevComponents, nextElements, instantiate) {
     } else {
       const prevNode = prevComponent.getHostNode()
       prevComponent.unmount()
-      currentComponent = instantiate(nextElem)
+      nextComponent = instantiate(nextElem)
       repalceOrDelete.push({
         type: OperationTypes.REPLACE,
         prevNode,
-        nextNode: currentComponent.mount()
+        nextNode: nextComponent.mount()
       })
     }
 
@@ -85,13 +91,16 @@ function diff(prevComponents, nextElements, instantiate) {
       })
     }
 
-    currentComponent._mountedIndex = nextIndex
-    nextComponents.push(currentComponent)
+    // currentComponent._mountedIndex = nextIndex
+    // nextComponents.push(currentComponent)
+    nextComponent._mountedIndex = nextIndex
+    nextComponents.push(nextComponent)
   }
 
   for (const prevKey of Object.keys(prevComponentMap)) {
     const prevComponent = prevComponentMap[prevKey]
-    if (!nextElemMap[prevKey]) {
+    const nextElem = nextElemMap[prevKey]
+    if (!nextElem && prevComponent.getHostNode()) {
       patches.push({
         type: OperationTypes.REMOVE,
         node: prevComponent.getHostNode()
