@@ -28,7 +28,7 @@
       window.onload = function() {
         console.log(Freact)
         const root = document.getElementById('root')
-        const myButton = e(
+        const hiButton = e(
           Button,
           { onClick: sayHi, key: '0' },
           Freact.createTextElement('sayHi', '0')
@@ -44,8 +44,6 @@
           Freact.createTextElement('unmount')
         )
         function rerender() {
-          // const div = e('div', {}, unmountButton, rerenderButton, myButton)
-
           const fuckBtn = e(
             Button,
             { key: '4', onClick: thirdRender },
@@ -56,19 +54,9 @@
             {},
             unmountButton,
             Freact.createNullElement('3'),
-            myButton,
+            hiButton,
             fuckBtn
           )
-          // const div = e('div', {}, unmountButton, Freact.createNullElement('3'), Freact.createNullElement('0'))
-
-          // const fuckSpn = e('span', { key: '3' }, Freact.createTextElement('fuck'))
-          // const div = e('div', {}, unmountButton, fuckSpn, myButton)
-
-          // const div = e(
-          //   'span',
-          //   { key: '0' },
-          //   Freact.createTextElement('some')
-          // )
           Freact.render(div, root)
         }
         function thirdRender() {
@@ -76,7 +64,7 @@
             'div',
             {},
             Freact.createTextElement('wow', '4'),
-            myButton
+            hiButton
           )
           Freact.render(div, root)
         }
@@ -88,7 +76,7 @@
         const buttons = e(
           'div',
           {},
-          myButton,
+          hiButton,
           unmountButton,
           Freact.createNullElement('2'),
           rerenderButton
